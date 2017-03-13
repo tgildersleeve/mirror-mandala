@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+  <html>
+  
+    <head>
+    	<title>Mirror Mandala</title>
+    </head>
+    
+    <body onload="init()">
+    
+    	<canvas id="mandala" width="600" height="400" style="position:absolute;top:0%;left:0%;border:2px solid;"></canvas>
+    	<button id="button" type="button" style="position:absolute;top:410px;">Clear</button>
+    	
+    	<script type="text/javascript">
+    		
+    		var prevX = 0,
+        		currX = 0,
+        		prevY = 0,
+        		currY = 0;
+			
+    		var color = "black",
+       			size = 3;
+    
+   			function init() {
+   			
+        		canvas = document.getElementById("mandala");
+        		ctx = canvas.getContext("2d");
+        		ctx.strokeStyle = color;
+        		ctx.lineWidth = size;
+        		
+        		clearCanvas();
+        		
+        		canvas.addEventListener("mousemove", function(e){
+        			getXY(e)
+        		});
+        		
+        		button = document.getElementById("button");
+        		button.addEventListener("click", clearCanvas);
+        			
+   	 		}
+   	 		
+   	 		
+   	 		function getXY(e) {
+                prevX = currX;
+                prevY = currY;
+                currX = e.clientX - canvas.offsetLeft;
+                currY = e.clientY - canvas.offsetTop;
+                drawMandala();
+            }
+            
+            function clearCanvas(){
+            	ctx.lineWidth = 2;
+            
+            	ctx.clearRect(0, 0, canvas.width, canvas.height);
+            	
+            	// circle
+        		ctx.beginPath();
+        		ctx.arc(200,200,200,0,2*Math.PI);
+        		ctx.stroke();
+        		ctx.closePath();
+        		
+        		// arc
+        		ctx.beginPath();
+        		ctx.arc(450,200,200, 3*Math.PI/2, 5*Math.PI/3);
+        		ctx.stroke();
+        		ctx.closePath();
+        		
+        		// line1
+        		ctx.beginPath();
+        		ctx.moveTo(450,200);
+        		ctx.lineTo(450,0);
+        		ctx.stroke();
+        		ctx.closePath();
+        		
+        		// line2
+        		ctx.beginPath();
+        		ctx.moveTo(450,200);
+        		var down = 200*Math.cos(Math.PI/6);
+        		var right = 200*Math.sin(Math.PI/6);
+        		ctx.lineTo(450 + right, 200 - down);
+        		ctx.stroke();
+        		ctx.closePath();
+        		
+        		ctx.lineWidth = 3;
+            }
+    		
+    		function drawMandala(){
+    			if (currX >= 450 && currY <= 200 && prevX >=450 && prevY <= 200){ // quadrant bounds and x's lower bound
+    				var xFromOCurr = currX - 450;
+    				var yFromOCurr = 200 - currY;
+    				var xFromOPrev = prevX - 450;
+    				var yFromOPrev = 200 - prevY;
+    				var radiansCurr = Math.atan(xFromOCurr/yFromOCurr);
+    				var radiansPrev = Math.atan(xFromOPrev/yFromOPrev);
+    				if (radiansCurr >= 0 && radiansCurr <= Math.PI/6 && radiansPrev >= 0 && radiansPrev <= Math.PI/6){ // x and y's upper bound
+    					var hypCurr = Math.sqrt( Math.pow(xFromOCurr,2) + Math.pow(yFromOCurr,2) );
+    					var hypPrev = Math.sqrt( Math.pow(xFromOPrev,2) + Math.pow(yFromOPrev,2) );
+    					if (hypCurr <=200 && hypPrev <=200){ // y's lower bound
+    						drawSlice(prevX, prevY, currX, currY);
+    						drawMirrors(prevX, prevY, currX, currY);
+    					}
+    				}
+    			}
+    		}
+    	    
+            function drawSlice(prevX, prevY, currX, currY){
+            	ctx.beginPath();
+        		ctx.moveTo(prevX, prevY);
+        		ctx.lineTo(currX, currY);
+        		ctx.stroke();
+        		ctx.closePath(); 	
+            }
+            
+            function drawMirrors(prevX, prevY, currX, currY){
+            	var copyPrevX = prevX-250;
+        		var copyPrevY = prevY;
+        		var copyCurrX = currX-250;
+        		var copyCurrY = currY;
+        		for (var angle = 0; angle <= 2*Math.PI; angle +=Math.PI/6){
+        			var xPrevRot = Math.cos(angle)*(copyPrevX-200) - Math.sin(angle)*(copyPrevY - 200) + 200; // rotation formulas
+        			var yPrevRot = Math.sin(angle)*(copyPrevX-200) + Math.cos(angle)*(copyPrevY - 200) + 200;
+        			var xCurrRot = Math.cos(angle)*(copyCurrX-200) - Math.sin(angle)*(copyCurrY - 200) + 200;
+        			var yCurrRot = Math.sin(angle)*(copyCurrX-200) + Math.cos(angle)*(copyCurrY - 200) + 200;
+        			ctx.beginPath();
+        			ctx.moveTo(xPrevRot, yPrevRot);
+        			ctx.lineTo(xCurrRot, yCurrRot);
+        			ctx.stroke();
+        			ctx.closePath(); 
+        			drawSlice(xPrevRot,yPrevRot,xCurrRot,yCurrRot);
+        		}
+            }
+                
+    	</script>
+    
+    </body>
+    </html>
