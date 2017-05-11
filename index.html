@@ -5,40 +5,45 @@
     	<title>Mirror Mandala</title>
     	
     	<style>
-    		table{
-    			position:absolute;
-    			top:280px;
-    			left:405px;
-    		}
-    		.button{
-    			width:20px;
-    			height:20px;
-    			border: 0px;
-    		}	
+    	    .button{
+                position: absolute;
+                top: 410px;
+                border: none;
+                width: 15px;
+                height: 15px;
+            }
+
+            #reset{
+                border: none;
+                background-color: black;
+                color: white;
+                position: absolute;
+                top: 410px;
+                left: 50px;
+            }
+
+            #mandala{
+                position: absolute;
+                top: 0%;
+                left: 0%;
+            }	
     	</style>
     </head>
     
     <body onload="init()">
     
-    	<canvas id="mandala" width="510" height="400" style="position:absolute;top:0%;left:0%;border:2px solid;"></canvas>
-    	<button id="reset" type="button" style="position:absolute;top:410px;">Reset</button>
+    	<canvas id="mandala" width="510" height="403"></canvas>
+    	<button id="reset" type="button">Reset</button>
 
-    	<table>
-    		<tr>
-    			<td> <button id="black" class="button" type="button"></button> </td>
-			<td> <button id="red" class="button" type="button"></button> </td>
-    			<td> <button id="orange" class="button" type="button"></button> </td>
-    			<td> <button id="yeller" class="button" type="button"></button> </td>
-    		</tr>
-    		<tr>
-    			<td> <button id="green" class="button" type="button"></button> </td>
-    			<td> <button id="blue" class="button" type="button"></button> </td>
-    			<td> <button id="purple" class="button" type="button"></button> </td>
-    			<td> <button id="magenta" class="button" type="button"></button> </td>
-    		</tr>
-    	</table>
+    	<button id="black" class="button" type="button"></button>
+	<button id="red" class="button" type="button"></button>
+    	<button id="orange" class="button" type="button"></button>
+    	<button id="yeller" class="button" type="button"></button>
+    	<button id="green" class="button" type="button"></button>
+    	<button id="blue" class="button" type="button"></button>
+    	<button id="purple" class="button" type="button"></button>
+    	<button id="magenta" class="button" type="button"></button>
     	
-
     	<script>
     		
     		var prevX = 0,
@@ -47,14 +52,11 @@
         		currY = 0;
         	
         	var circleCenter = 200,
-            	sliceCenterX = 450,
-        		sliceCenterY = 250,
-        		radius = 200,
-        		sliceOffset = 50,
-        		sliceAngle = Math.PI/12;
+        		radius = 200;
+        		
 			
     
-   			function init() {
+   		function init() {
    			
         		canvas = document.getElementById("mandala");
         		ctx = canvas.getContext("2d");
@@ -69,19 +71,22 @@
         		
         		allButtons();
         			
-   	 		}
+   	 	}
    	 		
    	 		// set up all buttons
-   	 		function allButtons(){
-   	 			var resetButton = document.getElementById("reset");
+   	 	function allButtons(){
+   	 		var resetButton = document.getElementById("reset");
         		resetButton.addEventListener("click", resetCanvas);
         		
         		var colorButtons = document.getElementsByClassName("button");
-        		// 				black, 		red, 	orange, 	yellow, 	green, 		blue, 	purple, 	magenta
+        		// 		black, 	  red, 	    orange, 	yellow,    green,      blue, 	purple,    magenta
         		var colors = ["#000000", "#FF0000", "#FFBB00", "#FFFF00", "#55FF55", "#0000FF", "#BB00FF", "#FF00FF"];
+                	var startWidth = 125;
         		for (var i = 0; i < colorButtons.length; i++){
         			colorButtons[i].style.backgroundColor = colors[i];
         			colorButtons[i].addEventListener("click", setColor(i));
+                   		colorButtons[i].style.left= startWidth+"px";
+                    		startWidth += 20;
         		}
         		
         		function setColor(i){
@@ -90,10 +95,10 @@
         			};
         		}
 
-   	 		}
+   	 	}
    	 		
    	 		// get mouse's coordinates
-   	 		function getXY(e) {
+   	 function getXY(e) {
                 prevX = currX;
                 prevY = currY;
                 currX = e.clientX - canvas.offsetLeft;
@@ -102,99 +107,50 @@
             }
             
             // clear the canvas
-            function resetCanvas(){
+         function resetCanvas(){
             	ctx.lineWidth = 2;
             	ctx.strokeStyle = "black";
             	ctx.clearRect(0, 0, canvas.width, canvas.height);
             	
             	// circle
-        		ctx.beginPath();
-        		ctx.arc(circleCenter, circleCenter, radius, 0, 2*Math.PI);
-        		ctx.stroke();
-        		ctx.closePath();
+        	ctx.beginPath();
+        	ctx.arc(circleCenter, circleCenter, radius, 0, 2*Math.PI);
+        	ctx.stroke();
+        	ctx.closePath();
         		
-        		// arc
-        		ctx.beginPath();
-        		ctx.arc(sliceCenterX, sliceCenterY, radius, 3*Math.PI/2 - sliceAngle, 3*Math.PI/2 + sliceAngle);
-        		ctx.stroke();
-        		ctx.closePath();
-        		
-        		// line1
-        		ctx.beginPath();
-        		ctx.moveTo(sliceCenterX, sliceCenterY);
-        		var down = radius*Math.cos(-sliceAngle);
-        		var right = radius*Math.sin(-sliceAngle);
-        		ctx.lineTo(sliceCenterX + right, sliceCenterY - down);
-        		ctx.stroke();
-        		ctx.closePath();
-        		
-        		// line2
-        		ctx.beginPath();
-        		ctx.moveTo(sliceCenterX, sliceCenterY);
-        		var down = radius*Math.cos(sliceAngle);
-        		var right = radius*Math.sin(sliceAngle);
-        		ctx.lineTo(sliceCenterX + right, sliceCenterY - down);
-        		ctx.stroke();
-        		ctx.closePath();
-        		
-        		ctx.lineWidth = 1;
-            }
-    		
-    		// senses where lines should be drawn from the slice
-    		function drawMandala(){
-    			if(currY <= sliceCenterY && prevY <= sliceCenterY) {
-    				var xFromOCurr = currX - sliceCenterX;
-    				var yFromOCurr = sliceCenterY - currY;
-    				var xFromOPrev = prevX - sliceCenterX;
-    				var yFromOPrev = sliceCenterY - prevY;
-    				var radiansCurr = Math.atan(xFromOCurr/yFromOCurr);
-    				var radiansPrev = Math.atan(xFromOPrev/yFromOPrev);
-    				if (radiansCurr >= -sliceAngle && radiansCurr <= sliceAngle && radiansPrev >= -sliceAngle && radiansPrev <= sliceAngle){
-    					var hypCurr = Math.sqrt( Math.pow(xFromOCurr,2) + Math.pow(yFromOCurr,2) );
-    					var hypPrev = Math.sqrt( Math.pow(xFromOPrev,2) + Math.pow(yFromOPrev,2) );
-    					if (hypCurr <= radius && hypPrev <= radius){ // y's lower bound
-    						drawSlice(prevX, prevY, currX, currY);
-    						drawCopies(prevX, prevY - sliceOffset, currX, currY - sliceOffset);
-    						// also draw the mirrors
-    						drawSlice(prevX - 2*xFromOPrev, prevY, currX - 2*xFromOCurr, currY);
-    						drawCopies(prevX - 2*xFromOPrev, prevY - sliceOffset, currX - 2*xFromOCurr, currY - sliceOffset);
-    					}
-    				}
-    			}
-    		}
-    		
-    	    // draws the single slice
-            function drawSlice(prevX, prevY, currX, currY){
-            	ctx.beginPath();
-        		ctx.moveTo(prevX, prevY);
-        		ctx.lineTo(currX, currY);
-        		ctx.stroke();
-        		ctx.closePath(); 	
-            }         
+        	ctx.lineWidth = 1;
+         }
+			
+	// senses if mouse is in a drawable screen space
+    	function drawMandala(){
+    		var xFromOCurr = currX - circleCenter;
+    		var yFromOCurr = currY - circleCenter;
+    		var xFromOPrev = prevX - circleCenter;
+    		var yFromOPrev = prevY - circleCenter;
+    		var hypCurr = Math.sqrt( Math.pow(xFromOCurr,2) + Math.pow(yFromOCurr,2) );
+    		var hypPrev = Math.sqrt( Math.pow(xFromOPrev,2) + Math.pow(yFromOPrev,2) );
+    		if (hypCurr <= radius && hypPrev <= radius){
+                	drawCopies(prevX, prevY, currX, currY); // rotation
+    			drawCopies(prevX - 2*xFromOPrev, prevY, currX - 2*xFromOCurr, currY); // mirror rotation
+    		}		
+    	}        
             
-            // draws the slices on the entire circle:
-            function drawCopies(prevX, prevY, currX, currY){
-            	var copyPrevX = prevX-250;
-        		var copyPrevY = prevY;
-        		var copyCurrX = currX-250;
-        		var copyCurrY = currY;
-        		for (var angle = 0; angle <= 2*Math.PI; angle += Math.PI/6){
-        			// rotation formulas:
-        			var xPrevRot = Math.cos(angle)*(copyPrevX - circleCenter) - Math.sin(angle)*(copyPrevY - circleCenter) + circleCenter;
-        			var yPrevRot = Math.sin(angle)*(copyPrevX - circleCenter) + Math.cos(angle)*(copyPrevY - circleCenter) + circleCenter;
-        			var xCurrRot = Math.cos(angle)*(copyCurrX - circleCenter) - Math.sin(angle)*(copyCurrY - circleCenter) + circleCenter;
-        			var yCurrRot = Math.sin(angle)*(copyCurrX - circleCenter) + Math.cos(angle)*(copyCurrY - circleCenter) + circleCenter;
-        			ctx.beginPath();
-        			ctx.moveTo(xPrevRot, yPrevRot);
-        			ctx.lineTo(xCurrRot, yCurrRot);
-        			ctx.stroke();
-        			ctx.closePath(); 
-        			drawSlice(xPrevRot,yPrevRot,xCurrRot,yCurrRot);
-        		}
-            }
-            
-            
-                
+        // draws the slices on the entire circle:
+       function drawCopies(prevX, prevY, currX, currY){
+       		for (var angle = 0; angle <= 2*Math.PI; angle += Math.PI/6){
+        		// rotation formulas:
+        		var xPrevRot = Math.cos(angle)*(prevX - circleCenter) - Math.sin(angle)*(prevY - circleCenter) + circleCenter;
+        		var yPrevRot = Math.sin(angle)*(prevX - circleCenter) + Math.cos(angle)*(prevY - circleCenter) + circleCenter;
+        		var xCurrRot = Math.cos(angle)*(currX - circleCenter) - Math.sin(angle)*(currY - circleCenter) + circleCenter;
+        		var yCurrRot = Math.sin(angle)*(currX - circleCenter) + Math.cos(angle)*(currY - circleCenter) + circleCenter;
+        		ctx.beginPath();
+        		ctx.moveTo(xPrevRot, yPrevRot);
+        		ctx.lineTo(xCurrRot, yCurrRot);
+        		ctx.stroke();
+        		ctx.closePath(); 
+        	}
+     	}
+    		      
     	</script>
     
     </body>
